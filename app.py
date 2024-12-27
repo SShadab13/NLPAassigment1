@@ -1,13 +1,16 @@
 from flask import Flask, request, jsonify, render_template
 from spellchecker import SpellChecker
-from flask_socketio import SocketIO
+# from flask_socketio import SocketIO
 import re
 
 # Initialize Flask app
 app = Flask(__name__)
 
-# Enable WebSocket support with Flask-SocketIO
-socketio = SocketIO(app)
+# # Enable WebSocket support with Flask-SocketIO
+# socketio = SocketIO(app
+#                     ,cors_allowed_origins='*'
+#                     # , transports=['websocket']
+#                     )
 
 # ----------------------
 # Load and Preprocess Corpus
@@ -29,20 +32,20 @@ spell.word_frequency.load_words(corpus_words)  # Train the spell checker with pr
 # WebSocket for Real-time Spell Checking
 # ----------------------
 
-@socketio.on('message')  # WebSocket event listener
-def handle_message(data):
-    """
-    Handles real-time spell checking through WebSocket.
-    Receives a word, processes it, and sends back the corrected word.
+# @socketio.on('message')  # WebSocket event listener
+# def handle_message(data):
+#     """
+#     Handles real-time spell checking through WebSocket.
+#     Receives a word, processes it, and sends back the corrected word.
 
-    Args:
-        data (str): The input word from the client-side.
-    """
-    # Perform spell correction
-    corrected_word = spell.correction(data)
+#     Args:
+#         data (str): The input word from the client-side.
+#     """
+#     # Perform spell correction
+#     corrected_word = spell.correction(data)
 
-    # Send the corrected word back to the client
-    socketio.send(corrected_word)
+#     # Send the corrected word back to the client
+#     socketio.send(corrected_word)
 
 
 # ----------------------
@@ -96,4 +99,8 @@ if __name__ == '__main__':
     Runs the Flask application with WebSocket support.
     Debug mode is enabled for development purposes.
     """
-    socketio.run(app, debug=True)
+    # socketio.run(app, debug=True)
+    """
+    Start Flask server.
+    """
+    app.run(debug=True)
