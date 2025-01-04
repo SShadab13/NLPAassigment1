@@ -86,8 +86,3 @@ Upload the sample file through the application interface to see the corrected co
 - SpellChecker
 - HTML/CSS
 - Bootstrap
-
-Feel free to reach out if you need any further assistance or have any questions!
-```
-
-This README.md file should cover the overall setup process and provide clear instructions for users to get started with your project. Let me know if there's anything else you'd like to add or modify!
