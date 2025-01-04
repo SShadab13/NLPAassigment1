@@ -1,1 +1,80 @@
-data/
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Flask specific
+instance/
+.webassets-cache
+
+# Pytest
+.cache
+.pytest_cache/
+
+# Various IDEs and editors
+.vscode/
+*.swp
+*~
+.idea/
+.idea/*
+*.sublime-project
+*.sublime-workspace
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pycharm
+.idea
+
+# dotenv
+.env
+.venv
+env/
+env.bak/
+venv.bak/
+
+# Data files
+data/alldata_1_for_kaggle.csv
+data/cleaned_corpus.txt
+
+# Logs
+logs/
+*.log
+
+# Local and sensitive files
+.DS_Store
+*.sqlite3
+*.db
+*.local

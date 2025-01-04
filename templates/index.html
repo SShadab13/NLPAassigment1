@@ -1,134 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SpellChecker App</title>
-
-    <!-- Bootstrap CSS -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-
-    <!-- Custom CSS -->
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/style.css') }}"
-    />
-  </head>
-  <body class="bg-light">
-    <!-- Welcome Message -->
-    <div class="container text-center mt-5">
-      <h1 class="mb-4">Welcome to SpellChecker App</h1>
-    </div>
-
-    <!-- Instant Text Correction -->
-    <div class="container text-center mb-5">
-      <div class="row justify-content-center">
-        <div class="col-md-4">
-          <input
-            type="text"
-            id="inputField"
-            class="form-control mb-3"
-            placeholder="Enter text here..."
-          />
-        </div>
-        <div class="col-md-4">
-          <div id="outputField" class="p-2 border rounded bg-white shadow-sm">
-            Corrected Word
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- File Upload Section -->
-    <div class="container text-center mb-5">
-      <h4 class="mb-3">Batch File Correction</h4>
-
-      <!-- Drag and Drop or Upload Box -->
-
-      <!-- File Upload Form -->
-      <form id="uploadForm">
-        <!-- Drop Zone for File Upload -->
-        <fieldset class="upload_dropZone text-center mb-3 p-4" id="dropArea">
-          <!-- Hidden Legend for Accessibility -->
-          <legend class="visually-hidden">File Uploader</legend>
-
-          <!-- SVG Icon -->
-          <svg class="upload_svg" width="60" height="60" aria-hidden="true">
-            <use href="#icon-imageUpload"></use>
-          </svg>
-
-          <!-- Instructional Text -->
-          <p class="small my-2">
-            Drag &amp; Drop your text file inside the dashed region<br /><i
-              >or</i
-            >
-          </p>
-
-          <!-- Hidden File Input -->
-          <input
-            id="uploadFile"
-            class="position-absolute invisible"
-            type="file"
-            accept=".txt"
-          />
-
-          <!-- Label as Button -->
-          <label class="btn btn-upload mb-3" for="uploadFile"
-            >Choose File</label
-          >
-
-          <!-- Upload Gallery Placeholder -->
-          <div
-            class="upload_gallery d-flex flex-wrap justify-content-center gap-3 mb-0"
-          ></div>
-        </fieldset>
-      </form>
-
-      <!-- Loading Bar -->
-      <div class="progress mt-4" style="height: 20px">
-        <div
-          id="loadingBar"
-          class="progress-bar progress-bar-striped progress-bar-animated"
-          role="progressbar"
-          style="width: 0%"
-        ></div>
-      </div>
-    </div>
-
-    <!-- Display Area for Original and Corrected Text -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NLP Analytics Assignment I</title>
+    <!-- Bootstrap CSS for styling and responsive design -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light background color for better readability */
+        }
+        .container {
+            max-width: 800px; /* Limit the container width for better readability */
+            margin-top: 50px; /* Space from the top */
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+        .incorrect {
+            text-decoration: line-through;
+            color: #dc3545; /* Red color for incorrect words */
+        }
+        .correct {
+            color: #28a745; /* Green color for correct words */
+            font-weight: bold;
+        }
+        .heading {
+            color: #007bff; /* Blue color for the heading */
+            text-align: center;
+            margin-bottom: 40px; /* Space below the heading */
+        }
+        .highlight {
+            background-color: #ffeb3b; /* Yellow background for highlighted words */
+            font-weight: bold;
+        }
+        .loader {
+            display: none; /* Hide loader by default */
+            text-align: center; /* Center-align the loader text */
+        }
+    </style>
+</head>
+<body>
     <div class="container">
-      <div class="row">
-        <!-- Original Text -->
-        <div class="col-md-6">
-          <h5 class="text-center">Original Text</h5>
-          <textarea
-            id="originalText"
-            class="form-control"
-            rows="10"
-            readonly
-          ></textarea>
+        <h1 class="heading">NLP Analytics Assignment I</h1> <!-- Main heading -->
+        <h2 class="text-center">Check your spelling here</h2> <!-- Subheading -->
+
+        <div class="card">
+            <div class="card-body">
+                <h3>Enter a Word</h3> <!-- Section heading for word input -->
+                <div class="input-group mb-3">
+                    <!-- Input field for word entry -->
+                    <input type="text" class="form-control" id="wordInput" placeholder="Enter a word to check" aria-label="Enter a word" />
+                    <!-- Button to trigger spelling check -->
+                    <button class="btn btn-primary" onclick="checkSpelling()">Check Spelling</button>
+                </div>
+                <!-- Result display for word check -->
+                <div id="result" class="result"></div>
+            </div>
         </div>
 
-        <!-- Corrected Text -->
-        <div class="col-md-6">
-          <h5 class="text-center">Corrected Text</h5>
-          <textarea
-            id="correctedText"
-            class="form-control"
-            rows="10"
-            readonly
-          ></textarea>
+        <div class="upload-container mt-4">
+            <h3>Upload a Text File for Batch Correction</h3> <!-- Section heading for file upload -->
+            <div class="input-group mb-3">
+                <!-- Input field for file selection -->
+                <input type="file" class="form-control" id="fileInput" />
+                <!-- Button to trigger file upload and spell check -->
+                <button class="btn btn-primary" onclick="uploadFile()">Upload File</button>
+            </div>
+            <!-- Result display for file upload and correction -->
+            <div id="fileResult" class="result"></div>
         </div>
-      </div>
+
+        <!-- Loader to indicate processing -->
+        <div id="loader" class="loader">
+            <p>Checking your Doc.. Please wait...</p>
+        </div>
     </div>
 
-    <!-- Bootstrap JS and Dependencies -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Custom JS -->
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-  </body>
+    <!-- Bootstrap JavaScript bundle for interactive components -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Link to external JavaScript file -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
 </html>

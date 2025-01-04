@@ -1,106 +1,104 @@
-from flask import Flask, request, jsonify, render_template
+import time
+from flask import Flask, request, jsonify
 from spellchecker import SpellChecker
-# from flask_socketio import SocketIO
+import pandas as pd
 import re
+from threading import Thread
+from flask import render_template
 
-# Initialize Flask app
 app = Flask(__name__)
 
-# # Enable WebSocket support with Flask-SocketIO
-# socketio = SocketIO(app
-#                     ,cors_allowed_origins='*'
-#                     # , transports=['websocket']
-#                     )
-
-# ----------------------
-# Load and Preprocess Corpus
-# ----------------------
-
-# Load the cleaned corpus from a text file
-with open('data/cleaned_corpus.txt', 'r') as file:
-    text_corpus = file.read()
-
-# Preprocess the corpus: Extract words using regex
-corpus_words = re.findall(r'\w+', text_corpus)
-
-# Initialize PySpellChecker and load the custom corpus
 spell = SpellChecker()
-spell.word_frequency.load_words(corpus_words)  # Train the spell checker with preprocessed words
+corpus = None
+is_spell_checker_ready = False
 
+# Function to load dataset and initialize the spell checker
+def load_corpus(file_path):
+    global is_spell_checker_ready
+    # Load the CSV file using pandas
+    data = pd.read_csv(file_path, encoding='ISO-8859-1')
+    # Rename columns for better readability
+    data = data.rename(columns={"0": "Class Labels", "a": "Research Paper Text"})
+    
+    # Extract the 'Research Paper Text' column, remove NaN values, and concatenate all text into a single string
+    text = " ".join(data['Research Paper Text'].dropna().tolist())
+    
+    # Preprocess text: remove non-alphanumeric characters and convert to lowercase
+    text = re.sub(r'[^a-zA-Z\s]', '', text).lower()
+    # Tokenize the text into individual words
+    words = text.split()
+    return words
 
-# ----------------------
-# WebSocket for Real-time Spell Checking
-# ----------------------
+# Function to initialize the spell checker
+def initialize_spell_checker():
+    global is_spell_checker_ready
+    corpus_file = "data/alldata_1_for_kaggle.csv"  # Path to the corpus file
+    print("Loading Words from training corpus")
+    # Load words from the corpus
+    words = load_corpus(corpus_file)
+    
+    print("Initializing Spell Checker")
+    # Load words into the spell checker's frequency dictionary
+    spell.word_frequency.load_words(words)
+    
+    # Signal that the spell checker is ready
+    is_spell_checker_ready = True
+    print(f"Spell Checker Instance: {spell}")
 
-# @socketio.on('message')  # WebSocket event listener
-# def handle_message(data):
-#     """
-#     Handles real-time spell checking through WebSocket.
-#     Receives a word, processes it, and sends back the corrected word.
-
-#     Args:
-#         data (str): The input word from the client-side.
-#     """
-#     # Perform spell correction
-#     corrected_word = spell.correction(data)
-
-#     # Send the corrected word back to the client
-#     socketio.send(corrected_word)
-
-
-# ----------------------
-# Routes for Web Pages and API Endpoints
-# ----------------------
-
+# Route for the home page
 @app.route('/')
 def home():
-    """
-    Serves the main web page (index.html) for the application.
-
-    Returns:
-        HTML template: Renders the main page.
-    """
     return render_template('index.html')
 
+# Route to check if a word is correct
+@app.route("/check_word", methods=["POST"])
+def check_word():
+    # Get the word from the request
+    word = request.form.get('word')
+    # Check if the word is correct
+    if word in spell:
+        return jsonify({'word': word, 'correct': True})
+    else:
+        # Provide a corrected word if the input word is incorrect
+        corrected_word = spell.correction(word)
+        return jsonify({'word': corrected_word, 'correct': False})
 
-@app.route('/spellcheckText', methods=['POST'])
-def spellcheckText():
-    """
-    Handles spell checking for text input sent via HTTP POST requests.
+# Route to handle file uploads and check spelling
+@app.route("/upload_file", methods=["POST"])
+def upload_file():
+    # Check if a file part is present in the request
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'})
+    
+    file = request.files['file']
+    # Check if the user has selected a file
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'})
 
-    Request Body (JSON):
-        {
-            "text": "misspeled"
-        }
+    # Read the file content
+    text = file.read().decode('utf-8')
+    corrected_text = ""
+    original_text = text
 
-    Returns:
-        JSON:
-        {
-            "corrected_text": "misspelled"
-        }
-    """
-    # Extract text from JSON request
-    data = request.json
-    text = data.get('text', '')
+    # Check and correct each word in the text
+    for word in text.split():
+        if word in spell:
+            corrected_text += word + " "
+        else:
+            corrected_text += f'<span class="highlight">{spell.correction(word)}</span> '
 
-    # Perform spell checking and get the corrected word
-    corrected_text = spell.correction(text)
+    # Return the original and corrected text as JSON
+    return jsonify({'original_text': original_text, 'corrected_text': corrected_text})
 
-    # Return the corrected text in JSON format
-    return jsonify({'corrected_text': corrected_text})
-
-
-# ----------------------
-# Start Flask App with WebSocket
-# ----------------------
+# Route to check if the spell checker is ready
+@app.route('/is_ready', methods=['GET'])
+def is_ready():
+    return jsonify({'ready': is_spell_checker_ready})
 
 if __name__ == '__main__':
-    """
-    Runs the Flask application with WebSocket support.
-    Debug mode is enabled for development purposes.
-    """
-    # socketio.run(app, debug=True)
-    """
-    Start Flask server.
-    """
+    # Start the corpus loading and spell checker initialization in a background thread
+    thread = Thread(target=initialize_spell_checker)
+    thread.start()
+    
+    # Run the Flask app in debug mode
     app.run(debug=True)
