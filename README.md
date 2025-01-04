@@ -1,6 +1,3 @@
-Sure! Here's a README.md file for your project:
-
-```markdown
 # NLP Spell Checker Application
 
 This project implements a spell checker using Flask and Python, leveraging a pre-trained spell checking model. The application allows users to check the spelling of individual words or upload a text file for batch correction.
