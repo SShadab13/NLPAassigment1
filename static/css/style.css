@@ -63,3 +63,42 @@ button:hover {
   margin-top: 20px;
   font-size: 18px;
 }
+
+/* Drag-and-Drop Upload Box */
+.upload_dropZone {
+  color: #0f3c4b;
+  background-color: var(--colorPrimaryPale, #c8dadf);
+  outline: 2px dashed var(--colorPrimaryHalf, #c1ddef);
+  outline-offset: -12px;
+  transition:
+      outline-offset 0.2s ease-out,
+      outline-color 0.3s ease-in-out,
+      background-color 0.2s ease-out;
+}
+
+.upload_dropZone.highlight {
+  outline-offset: -4px;
+  outline-color: var(--colorPrimaryNormal, #0576bd);
+  background-color: var(--colorPrimaryEighth, #c8dadf);
+}
+
+/* Progress Bar */
+.progress-bar {
+  background-color: var(--colorPrimaryNormal);
+  transition: width 0.4s ease-in-out;
+}
+
+/* Hidden Result Area */
+.result {
+  display: none;
+}
+
+/* Text Areas */
+textarea {
+  resize: none;
+  border: 1px solid var(--colorPrimaryHalf);
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  line-height: 1.5;
+}
