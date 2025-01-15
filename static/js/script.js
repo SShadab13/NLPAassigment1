@@ -23,32 +23,86 @@ window.onload = function() {
     checkSpellCheckerStatus();
 };
 
-// Function to check the spelling of a word
-function checkSpelling() {
-    // Get the word entered by the user and trim any whitespace
-    const word = document.getElementById("wordInput").value.trim();
-    if (word === "") return; // If the input is empty, do nothing
+// // Function to check the spelling of a word
+// function checkSpelling() {
+//     // Get the word entered by the user and trim any whitespace
+//     const word = document.getElementById("wordInput").value.trim();
+//     if (word === "") return; // If the input is empty, do nothing
 
-    // Make a POST request to the '/check_word' endpoint
-    fetch("/check_word", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: `word=${word}` // Send the word as form data
-    })
-    .then(response => response.json())
-    .then(data => {
-        const resultDiv = document.getElementById("result");
-        // Display the result of the spell check
-        if (data.correct) {
-            resultDiv.innerHTML = `<p class="correct">'${data.word}' is spelled correctly.</p>`;
-        } else {
-            resultDiv.innerHTML = `<p class="incorrect">${word}</p><span class="correct"> ➔ ${data.word}</span>`;
+//     // Make a POST request to the '/check_word' endpoint
+//     fetch("/check_word", {
+//         method: "POST",
+//         headers: {
+//             "Content-Type": "application/x-www-form-urlencoded"
+//         },
+//         body: `word=${word}` // Send the word as form data
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//         const resultDiv = document.getElementById("result");
+//         // Display the result of the spell check
+//         if (data.correct) {
+//             resultDiv.innerHTML = `<p class="correct">'${data.word}' is spelled correctly.</p>`;
+//         } else {
+//             resultDiv.innerHTML = `<p class="incorrect">${word}</p><span class="correct"> ➔ ${data.word}</span>`;
+//         }
+//     })
+//     .catch(error => console.error('Error:', error));
+// }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const wordInput = document.getElementById("wordInput");
+    const checkButton = document.getElementById("checkButton");
+
+    // Function to check spelling
+    const checkSpelling = () => {
+        const word = wordInput.value.trim();
+        if (word === "") return; // Do nothing for empty input
+
+        fetch("/check_word", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: `word=${word}` // Send the word as form data
+        })
+        .then(response => response.json())
+        .then(data => {
+            const resultDiv = document.getElementById("result");
+            if (data.correct) {
+                resultDiv.innerHTML = `<p class="correct">'${data.word}' is spelled correctly.</p>`;
+            } else {
+                resultDiv.innerHTML = `<p class="incorrect">${word}</p><span class="correct"> ➔ ${data.word}</span>`;
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    };
+
+    // Add event listener for the input field
+    wordInput.addEventListener("keydown", (event) => {
+        // Check if 'Enter' or 'Space' key is pressed
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault(); // Prevent default action (e.g., adding space)
+            checkSpelling();
         }
-    })
-    .catch(error => console.error('Error:', error));
-}
+    });
+
+    // Trigger check spelling on button click
+    checkButton.addEventListener("click", checkSpelling);
+
+    // Add focus effect on the input field
+    wordInput.addEventListener("focus", () => {
+        wordInput.style.outline = "3px solid #00b3bb";
+    });
+
+    // Remove focus effect on blur
+    wordInput.addEventListener("blur", () => {
+        wordInput.style.outline = "none";
+    });
+});
+
+
+
 
 // // Function to upload a file and check its spelling
 // function uploadFile() {
@@ -101,6 +155,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const originalTextArea = document.getElementById('originalText');
     const correctedTextDiv = document.getElementById('correctedText');
 
+    // Hide progress bar initially
+    loadingBar.style.display = 'none';
+
     // Prevent default behaviors for drag-and-drop
     const preventDefaults = (event) => {
         event.preventDefault();
@@ -147,10 +204,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData();
         formData.append('file', file);
 
-        // Show progress bar and hide results
+        // Show and animate the progress bar
+        loadingBar.style.display = 'block';
         loadingBar.style.width = '0%';
         loadingBar.classList.add('progress-bar-striped', 'progress-bar-animated');
         fileResult.style.display = 'none';
+
+        let progress = 0;
+        const interval = setInterval(() => {
+            if (progress < 70) {
+                progress += 10;
+                loadingBar.style.width = `${progress}%`;
+            } else {
+                clearInterval(interval);
+            }
+        }, 200); // Simulate gradual progress
 
         fetch('/upload_file', {
             method: 'POST',
@@ -158,9 +226,11 @@ document.addEventListener('DOMContentLoaded', () => {
         })
             .then(response => response.json())
             .then(data => {
-                // Hide the loading bar
+                // Finalize the progress bar
                 loadingBar.style.width = '100%';
-                loadingBar.classList.remove('progress-bar-striped', 'progress-bar-animated');
+                setTimeout(() => {
+                    loadingBar.style.display = 'none';
+                }, 500);
 
                 // Populate text areas with results
                 originalTextArea.value = data.original_text || 'No original text available.';
@@ -172,7 +242,8 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => {
                 console.error('Error:', error);
                 alert('An error occurred while processing the file.');
-                loadingBar.classList.remove('progress-bar-striped', 'progress-bar-animated');
+                loadingBar.style.display = 'none';
             });
     };
 });
+

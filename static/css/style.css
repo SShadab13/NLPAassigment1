@@ -164,3 +164,9 @@ h5 {
       font-size: 12px;
   }
 }
+
+/* Word Input Field Focus Glow */
+.word-input:focus {
+  outline: 3px solid #00b3bb; /* Glow color */
+  box-shadow: 0 0 5px #00b3bb; /* Subtle shadow for enhanced effect */
+}

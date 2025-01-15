@@ -27,7 +27,7 @@
             font-weight: bold;
         }
         .heading {
-            color: #007bff; /* Blue color for the heading */
+            color:  #00979f; /* Blue color for the heading #007bff */
             text-align: center;
             margin-bottom: 40px; /* Space below the heading */
         }
@@ -50,18 +50,18 @@
     <div class="container">
         <h1 class="heading">NLP Analytics Assignment I</h1>
         <h2 class="text-center">Check your spelling here</h2>
-        
-        <!-- Word Spell Check -->
+       <!-- Word Spell Check -->
         <div class="card">
             <div class="card-body">
                 <h3>Enter a Word</h3>
                 <div class="input-group mb-3">
-                    <input type="text" class="form-control" id="wordInput" placeholder="Enter a word" />
-                    <button class="btn btn-primary" onclick="checkSpelling()">Check Spelling</button>
+                    <input type="text" class="form-control word-input" id="wordInput" placeholder="Enter a word" />
+                    <button class="btn btn-upload" id="checkButton">Check Spelling</button>
                 </div>
                 <div id="result" class="result"></div>
             </div>
         </div>
+
         
 
         <!-- File Upload -->
@@ -91,8 +91,7 @@
                     <!-- Corrected Text -->
                     <div class="col-md-6">
                         <h5 class="text-center">Corrected Text</h5>
-                        <!-- <div id="correctedText" class="form-control" style="overflow-y: auto; max-height: 300px;"></div> -->
-                        <div id="correctedText" class="form-control" style="overflow-y: auto; max-height: 300px;" rows="10"></div>
+                        <div id="correctedText" class="form-control" style="overflow-y: auto; max-height: 300px;"></div>
                     </div>
                 </div>
             </div>
