@@ -6,9 +6,11 @@ This project implements a spell checker using Flask and Python, leveraging a pre
 
 ### 1. Upload the Main Corpus
 
-1. Ensure the main corpus file is named `alldata_1_for_kaggle.csv`.
+1. Ensure the corpus file is named `alldata_1_for_kaggle.csv`.
 2. Upload the corpus file to the folder `data/`.
 3. alldata_1_for_kaggle.csv available in this link: https://www.kaggle.com/datasets/falgunipatel19/biomedical-text-publication-classification
+4. Also ensure that **main corpus** file `cleaned_corpus.txt` is present in the `data/` folder. 
+![Note]: you can go through the `TextCleaning.ipynb` file to se how we cleaned the provide data.
 
 ### 2. Create a Virtual Environment
 
@@ -68,7 +70,8 @@ Upload the sample file through the application interface to see the corrected co
 
 ### File Structure
 - `app.py`: Main Flask application file.
-- `data/alldata_1_for_kaggle.csv`: Main corpus file.
+- `data/alldata_1_for_kaggle.csv`: corpus file.
+- `data/cleaned_corpus.txt`: main **cleaned** corpus file. 
 - `data/sample_file_to_check.txt`: Sample file for testing.
 - `requirements.txt`: List of required Python libraries.
 
