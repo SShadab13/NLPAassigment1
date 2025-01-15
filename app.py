@@ -11,7 +11,7 @@ app = Flask(__name__)
 # ----------------------
 spell = None  # SpellChecker instance
 is_spell_checker_ready = False  # Readiness flag for spell checker
-CLEANED_FILE_PATH = 'data/cleaned_corpus_2.txt'  # Path to preprocessed corpus
+CLEANED_FILE_PATH = 'data/cleaned_corpus.txt'  # Path to preprocessed corpus
 
 # ----------------------
 # Load and Preprocess Corpus
@@ -64,7 +64,7 @@ def home():
         HTML template: Renders the main page.
     """
     # return render_template('index.html')
-    return render_template('index_2.html')
+    return render_template('index.html')
 
 
 

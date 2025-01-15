@@ -40,45 +40,66 @@
             text-align: center; /* Center-align the loader text */
         }
     </style>
+    <!-- Custom CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
 </head>
 <body>
     <div class="container">
-        <h1 class="heading">NLP Analytics Assignment I</h1> <!-- Main heading -->
-        <h2 class="text-center">Check your spelling here</h2> <!-- Subheading -->
-
-        <div class="card" id="WordSpellCheck">
+        <h1 class="heading">NLP Analytics Assignment I</h1>
+        <h2 class="text-center">Check your spelling here</h2>
+        
+        <!-- Word Spell Check -->
+        <div class="card">
             <div class="card-body">
-                <h3>Enter a Word</h3> <!-- Section heading for word input -->
+                <h3>Enter a Word</h3>
                 <div class="input-group mb-3">
-                    <!-- Input field for word entry -->
-                    <input type="text" class="form-control" id="wordInput" placeholder="Enter a word to check" aria-label="Enter a word" />
-                    <!-- Button to trigger spelling check -->
+                    <input type="text" class="form-control" id="wordInput" placeholder="Enter a word" />
                     <button class="btn btn-primary" onclick="checkSpelling()">Check Spelling</button>
                 </div>
-                <!-- Result display for word check -->
                 <div id="result" class="result"></div>
             </div>
         </div>
-
+        
 
         <!-- File Upload -->
         <div class="upload-container mt-4">
-            <h3>Upload a Text File for Batch Correction</h3> <!-- Section heading for file upload -->
-            <div class="input-group mb-3">
-                <!-- Input field for file selection -->
-                <input type="file" class="form-control" id="fileInput" />
-                <!-- Button to trigger file upload and spell check -->
-                <button class="btn btn-primary" onclick="uploadFile()">Upload File</button>
+            <h3>Upload a Text File for Batch Correction</h3>
+            <!-- Drag-and-Drop Zone -->
+            <fieldset class="upload_dropZone text-center mb-3 p-4" id="dropArea">
+                <legend class="visually-hidden">File Uploader</legend>
+                <p class="small my-2">Drag & Drop your file here<br><i>or</i></p>
+                <input id="fileInput" class="position-absolute invisible" type="file" accept=".txt" />
+                <label class="btn btn-upload" for="fileInput">Choose File</label>
+            </fieldset>
+        
+            <!-- Progress Bar -->
+            <div class="progress mt-4" style="height: 20px;">
+                <div id="loadingBar" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%;"></div>
             </div>
-            <!-- Result display for file upload and correction -->
-            <div id="fileResult" class="result"></div>
+        
+            <!-- Result Display Area (Hidden Initially) -->
+            <div id="fileResult" class="result mt-4" style="display: none;">
+                <div class="row">
+                    <!-- Original Text -->
+                    <div class="col-md-6">
+                        <h5 class="text-center">Original Text</h5>
+                        <textarea id="originalText" class="form-control" rows="10" readonly></textarea>
+                    </div>
+                    <!-- Corrected Text -->
+                    <div class="col-md-6">
+                        <h5 class="text-center">Corrected Text</h5>
+                        <!-- <div id="correctedText" class="form-control" style="overflow-y: auto; max-height: 300px;"></div> -->
+                        <div id="correctedText" class="form-control" style="overflow-y: auto; max-height: 300px;" rows="10"></div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <!-- Loader to indicate processing -->
-        <div id="loader" class="loader">
-            <p>Checking your Doc.. Please wait...</p>
-        </div>
+        
     </div>
+    
 
     <!-- Bootstrap JavaScript bundle for interactive components -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
